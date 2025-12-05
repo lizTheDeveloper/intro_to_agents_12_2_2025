@@ -2,7 +2,6 @@ from openai import OpenAI
 client = OpenAI()
 import json 
 
-
 def get_horoscope(sign):
     print(f"Getting horoscope for {sign}")
     return f"{sign}: Next Tuesday you will befriend a baby otter."

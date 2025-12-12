@@ -37,19 +37,6 @@ def move_file(source_path, destination_path):
     except Exception as error:
         return f"Error moving file: {str(error)}"
 
-def contact_user(message):
-    print(f"\n[Agent contacting user]: {message}")
-    user_response = input("Your response: ")
-    return user_response
-
-def make_directory(path):
-    print(f"Creating directory: {path}")
-    try:
-        os.makedirs(path, exist_ok=True)
-        return f"Successfully created directory {path}"
-    except Exception as error:
-        return f"Error creating directory: {str(error)}"
-
 
 class Agent:
     def __init__(self):
@@ -121,43 +108,13 @@ class Agent:
                     },
                     "required": ["source_path", "destination_path"],
                 },
-            },
-            {
-                "type": "function",
-                "name": "contact_user",
-                "description": "Contact the user to request information or clarification. Use this when you need user input to proceed with the task.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "The message or question to present to the user",
-                        },
-                    },
-                    "required": ["message"],
-                },
-            },
-            {
-                "type": "function",
-                "name": "make_directory",
-                "description": "Create a new directory at the specified path. Creates parent directories if they don't exist.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "path": {
-                            "type": "string",
-                            "description": "The path where the directory should be created",
-                        },
-                    },
-                    "required": ["path"],
-                },
             }
         ] # tools to use
         self.name = "Agent"
         self.system_prompt = f"""
         You are a helpful file system assistant.
+        Don't ask the user clarifying questions as they do not have an interactive terminal.
         Always check the current state of the file system before taking any action.
-        If you need clarification or additional information from the user, use the contact_user tool.
         You can use the following tools:
         {self.tools}
         """
@@ -204,14 +161,6 @@ class Agent:
                     # Execute the function logic for move_file
                     result = move_file(args.get("source_path"), args.get("destination_path"))
                 
-                elif item.name == "contact_user":
-                    # Execute the function logic for contact_user
-                    result = contact_user(args.get("message"))
-                
-                elif item.name == "make_directory":
-                    # Execute the function logic for make_directory
-                    result = make_directory(args.get("path"))
-                
                 # Provide function call results to the model
                 if result is not None:
                     self.memory.append({
@@ -248,6 +197,7 @@ class Agent:
             tool_calls = self.prompt(self.system_prompt + "\n Generate a sequence of tool calls to achieve the steps in the plan:\n" + plan)
             ## is the goal achieved? if not, repeat the process
             is_goal_achieved = self.prompt(self.system_prompt + "\n Is the goal achieved? Respond with 'Yes' or 'No'. " + self.goal)
+
             if "yes" in is_goal_achieved.lower():
                 keep_going = False
                 summary = self.prompt(self.system_prompt + "\n Summarize the results of the tool calls and the goal achievement.")
@@ -258,5 +208,4 @@ class Agent:
         
 
 agent = Agent()
-agent.run("there are a lot of markdown files and other files in this. Can you organize this folder so that everything is organized into logical folders based on the content of the file other than the README")
-
+agent.run("There was another agent who was told this: 'there are a lot of markdown files and other files in this. Can you organize this folder so that everything is organized into logical folders based on the content of the file other than the README'. Your role is to review the agent's work and provide feedback on how to improve it.")

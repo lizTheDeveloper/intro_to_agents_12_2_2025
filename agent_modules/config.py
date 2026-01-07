@@ -19,6 +19,9 @@ class AgentConfig:
     enable_background_processes: bool = True
     api_key: Optional[str] = None
     log_file: Optional[str] = None
+    verbose: bool = False
+    save_conversation: bool = True
+    conversation_file: Optional[str] = None
     
     def __post_init__(self):
         """Validate and set defaults after initialization."""

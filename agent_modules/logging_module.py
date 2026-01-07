@@ -63,3 +63,38 @@ class AgentLogger:
     def critical(self, message: str):
         """Log critical message."""
         self.logger.critical(message)
+    
+    def reasoning(self, message: str):
+        """Log reasoning/thinking process (always shown)."""
+        # Use info level but with special formatting
+        self.logger.info(f"🧠 REASONING: {message}")
+    
+    def step(self, message: str):
+        """Log step/progress information."""
+        self.logger.info(f"📋 STEP: {message}")
+    
+    def tool_call(self, tool_name: str, args: dict):
+        """Log tool call with arguments."""
+        args_str = str(args)[:200] + "..." if len(str(args)) > 200 else str(args)
+        self.logger.info(f"🔧 TOOL: {tool_name}({args_str})")
+    
+    def tool_result(self, tool_name: str, success: bool, result: any = None):
+        """Log tool execution result."""
+        status = "✓" if success else "✗"
+        result_preview = str(result)[:150] + "..." if result and len(str(result)) > 150 else str(result)
+        self.logger.info(f"{status} TOOL RESULT [{tool_name}]: {result_preview}")
+    
+    def plan(self, plan_text: str):
+        """Log the plan."""
+        # Show first 500 chars of plan
+        preview = plan_text[:500] + "..." if len(plan_text) > 500 else plan_text
+        self.logger.info(f"📝 PLAN:\n{preview}")
+    
+    def reflection(self, reflection_text: str):
+        """Log reflection/reasoning."""
+        preview = reflection_text[:300] + "..." if len(reflection_text) > 300 else reflection_text
+        self.logger.info(f"💭 REFLECTION:\n{preview}")
+    
+    def status(self, message: str):
+        """Log status update."""
+        self.logger.info(f"📊 STATUS: {message}")

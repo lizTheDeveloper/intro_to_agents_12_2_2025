@@ -19,6 +19,8 @@ from .tool_registry import ToolRegistry
 from .tool_executor import ToolExecutor
 from .process_manager import ProcessManager
 from .run_loop import PlanningStrategy, ExecutionStrategy, GoalChecker, AgentRunLoop
+from .progress_tracker import ProgressTracker
+from .conversation_saver import ConversationSaver
 
 __all__ = [
     'AgentError',
@@ -38,4 +40,6 @@ __all__ = [
     'ExecutionStrategy',
     'GoalChecker',
     'AgentRunLoop',
+    'ProgressTracker',
+    'ConversationSaver',
 ]

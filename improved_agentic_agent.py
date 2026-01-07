@@ -27,6 +27,8 @@ from agent_modules import (
     ExecutionStrategy,
     GoalChecker,
     AgentRunLoop,
+    ProgressTracker,
+    ConversationSaver,
 )
 from agent_modules.default_tools import get_default_tool_definitions
 
@@ -125,13 +127,23 @@ class Agent:
             self.logger
         )
         
+        # Initialize progress tracker
+        progress_tracker = ProgressTracker(total_iterations=config.max_iterations)
+        
+        # Initialize conversation saver if enabled
+        self.conversation_saver = None
+        if config.save_conversation:
+            save_dir = config.conversation_file or os.path.join(self.working_directory, "conversations")
+            self.conversation_saver = ConversationSaver(self.logger, save_dir)
+        
         self.run_loop = AgentRunLoop(
             self.planner,
             self.executor,
             self.goal_checker,
             self.memory_manager,
             self.logger,
-            max_iterations=config.max_iterations
+            max_iterations=config.max_iterations,
+            progress_tracker=progress_tracker
         )
     
     def _build_system_prompt(self) -> str:
@@ -356,9 +368,40 @@ class Agent:
             MaxIterationsExceeded: If max iterations exceeded
         """
         try:
-            return self.run_loop.run(user_input, self.system_prompt)
+            result = self.run_loop.run(user_input, self.system_prompt)
+            
+            # Save conversation if enabled
+            if self.conversation_saver:
+                metadata = {
+                    "iterations": self.run_loop.progress_tracker.current_iteration,
+                    "elapsed_time": self.run_loop.progress_tracker.get_elapsed_str(),
+                    "working_directory": self.working_directory,
+                }
+                self.conversation_saver.save_conversation(
+                    self.memory_manager.get_messages(),
+                    user_input,
+                    metadata
+                )
+                self.conversation_saver.save_summary(result, user_input, metadata)
+            
+            return result
         except MaxIterationsExceeded as error:
             self.logger.error(str(error))
+            
+            # Save conversation even on failure
+            if self.conversation_saver:
+                metadata = {
+                    "iterations": self.run_loop.progress_tracker.current_iteration,
+                    "elapsed_time": self.run_loop.progress_tracker.get_elapsed_str(),
+                    "error": str(error),
+                    "working_directory": self.working_directory,
+                }
+                self.conversation_saver.save_conversation(
+                    self.memory_manager.get_messages(),
+                    user_input,
+                    metadata
+                )
+            
             raise
         finally:
             # Cleanup background processes

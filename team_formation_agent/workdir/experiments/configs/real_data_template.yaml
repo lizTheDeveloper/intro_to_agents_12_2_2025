@@ -1,0 +1,21 @@
+format: pioneer
+
+data:
+  mtgjson:
+    # Download from https://mtgjson.com/downloads/all-files/
+    # Prefer SQLite for performance.
+    sqlite_path: data/AllPrintings.sqlite
+    # Alternatively:
+    # all_printings_json_path: data/AllPrintings.json
+
+run:
+  seed: 1
+
+# Evolution settings (prototype)
+evolve:
+  pop: 50
+  generations: 25
+  weights:
+    playability: 0.6
+    competitive: 0.3
+    fun: 0.1

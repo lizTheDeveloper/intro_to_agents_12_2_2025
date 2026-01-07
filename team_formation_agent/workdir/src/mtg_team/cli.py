@@ -7,6 +7,7 @@ from pathlib import Path
 from mtg_team.data.load import load_mtgjson
 from mtg_team.deck.rules import FormatRules
 from mtg_team.deck.validate import validate_deck
+from mtg_team.evolve.evolution import evolve_playability
 from mtg_team.generate.baseline import generate_baseline_deck
 from mtg_team.util.config import load_config
 from mtg_team.util.rng import seed_everything
@@ -24,6 +25,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_gen.add_argument("--config", required=True)
     p_gen.add_argument("--seed", type=int, default=1)
     p_gen.add_argument("--out", required=True)
+
+    p_evo = sub.add_parser("evolve", help="Run prototype evolutionary optimization (playability only).")
+    p_evo.add_argument("--config", required=True)
+    p_evo.add_argument("--seed", type=int, default=1)
+    p_evo.add_argument("--pop", type=int, default=20)
+    p_evo.add_argument("--generations", type=int, default=10)
+    p_evo.add_argument("--out", required=True, help="Where to write best individual JSON")
 
     p_test = sub.add_parser("self-test", help="Run minimal self-tests without pytest.")
 
@@ -66,6 +74,17 @@ def cmd_generate_deck(cfg: dict, seed: int, out: str) -> int:
     return 0
 
 
+def cmd_evolve(cfg: dict, seed: int, pop: int, generations: int, out: str) -> int:
+    fmt = (cfg.get("format") or "pioneer").lower()
+    idx = load_mtgjson(cfg)
+    population = evolve_playability(idx, fmt, seed=seed, pop=pop, generations=generations)
+    best = population[0]
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    Path(out).write_text(json.dumps({"fitness": best.fitness, "deck": best.deck_json}, indent=2))
+    print(f"Wrote {out}")
+    return 0
+
+
 def cmd_self_test() -> int:
     from mtg_team.util.mini_test import run
 
@@ -85,6 +104,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "generate-deck":
         return cmd_generate_deck(cfg, args.seed, args.out)
+
+    if args.cmd == "evolve":
+        return cmd_evolve(cfg, args.seed, args.pop, args.generations, args.out)
 
     raise RuntimeError(f"Unknown cmd: {args.cmd}")
 

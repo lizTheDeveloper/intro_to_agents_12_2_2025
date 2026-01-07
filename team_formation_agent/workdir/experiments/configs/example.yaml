@@ -1,0 +1,9 @@
+format: pioneer
+
+data:
+  mtgjson:
+    # Provide either sqlite_path or all_printings_json_path (implemented in next phase)
+    sqlite_path: data/AllPrintings.sqlite
+
+run:
+  seed: 1

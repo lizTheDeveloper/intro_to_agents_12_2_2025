@@ -1,0 +1,59 @@
+{
+  "data": {
+    "TST": {
+      "cards": [
+        {
+          "uuid": "00000000-0000-0000-0000-000000000001",
+          "name": "Forest",
+          "types": ["Basic", "Land"],
+          "colors": [],
+          "colorIdentity": ["G"],
+          "manaValue": 0,
+          "legalities": {"pioneer": "Legal"}
+        },
+        {
+          "uuid": "00000000-0000-0000-0000-000000000002",
+          "name": "Island",
+          "types": ["Basic", "Land"],
+          "colors": [],
+          "colorIdentity": ["U"],
+          "manaValue": 0,
+          "legalities": {"pioneer": "Legal"}
+        },
+        {
+          "uuid": "00000000-0000-0000-0000-000000000003",
+          "name": "Grizzly Bears",
+          "types": ["Creature"],
+          "colors": ["G"],
+          "colorIdentity": ["G"],
+          "manaCost": "{1}{G}",
+          "manaValue": 2,
+          "text": "",
+          "legalities": {"pioneer": "Legal"}
+        },
+        {
+          "uuid": "00000000-0000-0000-0000-000000000004",
+          "name": "Cancel",
+          "types": ["Instant"],
+          "colors": ["U"],
+          "colorIdentity": ["U"],
+          "manaCost": "{1}{U}{U}",
+          "manaValue": 3,
+          "text": "Counter target spell.",
+          "legalities": {"pioneer": "Legal"}
+        },
+        {
+          "uuid": "00000000-0000-0000-0000-000000000005",
+          "name": "Banned Spell",
+          "types": ["Sorcery"],
+          "colors": ["G"],
+          "colorIdentity": ["G"],
+          "manaCost": "{G}",
+          "manaValue": 1,
+          "text": "",
+          "legalities": {"pioneer": "Banned"}
+        }
+      ]
+    }
+  }
+}

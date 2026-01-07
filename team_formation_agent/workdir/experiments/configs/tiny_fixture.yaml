@@ -1,0 +1,8 @@
+format: pioneer
+
+data:
+  mtgjson:
+    all_printings_json_path: tests/fixtures/tiny_all_printings.json
+
+run:
+  seed: 1
